@@ -5,9 +5,10 @@ void print(string ss);
 int main()
 {
 	int letter;
-	string word,newsuffix;
+	string word, newsuffix;
 	vector<string> suffix;
 	vector<string> etyma;
+	vector<int> suffixnum;
 	ifstream ff("dictionary.txt");
 	cout << "Please enter the number of letters:" << endl;
 	cin >> letter;
@@ -21,7 +22,7 @@ int main()
 			{
 				etyma.erase(etyma.begin() + size);
 			}
-			else{ size++; }
+			else { size++; }
 		}
 		for (int i = 0; i < etyma.size(); i++)
 		{
@@ -33,11 +34,14 @@ int main()
 			{
 				newsuffix = word.substr(word.length() - letter);
 				suffix.push_back(newsuffix);
-				for (int i = 0; i < suffix.size()-1; i++)
+				suffixnum.push_back(1);
+				for (int i = 0; i < suffix.size() - 1; i++)
 				{
 					if (suffix[i] == newsuffix)
 					{
+						suffixnum[i]++;
 						suffix.pop_back();
+						suffixnum.pop_back();
 						break;
 					}
 				}
@@ -46,25 +50,51 @@ int main()
 		etyma.push_back(word);
 	}
 	ff.close();
-	string mysuffix;
-	cout << "Please enter the mysuffic:" << endl;
-	cin >> mysuffix;
-	for (int i = 0; i < suffix.size(); i++)
+	vector<int> position;
+	int max;
+	for (int i = 0; i < suffixnum.size(); i++)
 	{
-		if (suffix[i] == newsuffix)
+		max = suffixnum[i];
+		position.push_back(i);
+		for (int j = 0; j < position.size() - 1; j++)
 		{
-			print(mysuffix);
+			if (max > suffixnum[position[j]])
+			{
+				position.insert(position.begin() + j, i);
+				position.pop_back();
+				break;
+			}
 		}
 	}
+	for (int i = 0; i < 10; i++)
+	{
+		cout << suffix[position[i]] << ' '
+			<< suffixnum[position[i]] << endl;
+	}
+	int havenum = 0;
+	while (1)
+	{
+		string mysuffix;
+		cout <<'\n'<< "Please enter the mysuffic ( enter \"Quit\" for quit):" << endl;
+		cin >> mysuffix;
+		if (mysuffix == "Quit")
+		{
+			break;
+		}
+		else if (mysuffix.size() != letter)
+		{
+			cout << "error" << endl;
+			continue;
+		}
+		print(mysuffix);
+	}
 }
-void print(string ss)
+void print(string mysuffix)
 {
-	string mysuffix,word;
+	string word;
 	ifstream ff("dictionary.txt");
 	vector<string>etyma;
 	vector<string>myword;
-	cout << "Please enter the mysuffic:" << endl;
-	cin >> mysuffix;
 	while (ff)
 	{
 		ff >> word;
@@ -91,4 +121,5 @@ void print(string ss)
 	{
 		cout << myword[i] << endl;
 	}
+	cout << myword.size() << endl;
 }
